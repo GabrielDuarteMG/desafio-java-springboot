@@ -1,0 +1,7 @@
+dev\gabrields\desafiojavaspringboot\domain\dto\ProductDTO.class
+dev\gabrields\desafiojavaspringboot\repositories\ProductRepository.class
+dev\gabrields\desafiojavaspringboot\DesafioJavaSpringbootApplication.class
+dev\gabrields\desafiojavaspringboot\domain\Product.class
+dev\gabrields\desafiojavaspringboot\services\ProductService.class
+dev\gabrields\desafiojavaspringboot\domain\ResponseError.class
+dev\gabrields\desafiojavaspringboot\resources\ProductsResources.class
