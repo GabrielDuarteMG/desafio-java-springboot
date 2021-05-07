@@ -54,7 +54,7 @@ Durante a criação e alteração, os campos name, description e price são obri
 Devem ser disponibilizados os seguintes endpoints para operação do catálogo de produtos:
 
 
-| Verbo HTTP  |  Resource path    |           DescriÃ§Ã£o           |
+| Verbo HTTP  |  Resource path    |           Descrição           |
 |-------------|:-----------------:|------------------------------:|
 | POST        |  /products        |   Criação de um produto       |
 | PUT         |  /products/{id}   |   Atualização de um produto   |
