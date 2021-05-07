@@ -56,8 +56,18 @@ public class ProductService {
 			return 404;
 		}
 	}
+	
+	public int updateProduct(String id,Product prod) {
+		if (repo.existsById(id)) {
+			prod.setId(id);
+			repo.save(prod);
+			return 200;
+		} else {
+			return 404;
+		}
+	}
 
-	public Product insertOrUpdateProduct(Product prod) {
+	public Product insertProduct(Product prod) {
 		repo.save(prod);
 		return prod;
 	}

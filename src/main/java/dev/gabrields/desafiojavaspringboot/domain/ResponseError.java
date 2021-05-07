@@ -2,6 +2,8 @@ package dev.gabrields.desafiojavaspringboot.domain;
 
 import java.io.Serializable;
 
+import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResponseError implements Serializable {
@@ -11,18 +13,18 @@ public class ResponseError implements Serializable {
 	 */
 	private static final long serialVersionUID = -5549249661028087853L;
 	@JsonProperty("status_code")
-	private int statusCode;
+	private HttpStatus statusCode;
 	private String message;
 	
-	public ResponseError(int statusCode, String message) {
+	public ResponseError(HttpStatus statusCode, String message) {
 		super();
 		this.statusCode = statusCode;
 		this.message = message;
 	}
-	public int getStatusCode() {
+	public HttpStatus getStatusCode() {
 		return statusCode;
 	}
-	public void setStatusCode(int statusCode) {
+	public void setStatusCode(HttpStatus statusCode) {
 		this.statusCode = statusCode;
 	}
 	public String getMessage() {

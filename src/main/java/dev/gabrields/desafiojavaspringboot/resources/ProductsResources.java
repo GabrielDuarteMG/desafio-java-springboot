@@ -1,12 +1,19 @@
 package dev.gabrields.desafiojavaspringboot.resources;
 
 import java.math.BigDecimal;
-import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.gabrields.desafiojavaspringboot.domain.Product;
@@ -33,10 +41,11 @@ public class ProductsResources {
 	}
 
 	@GetMapping(value = "/search")
-	public ResponseEntity<List<Product>> searchProducts(@RequestParam(name = "q",required = false) String nameDescription,
+	public ResponseEntity<List<Product>> searchProducts(
+			@RequestParam(name = "q", required = false) String nameDescription,
 			@RequestParam(name = "min_price", required = false) BigDecimal minPrice,
 			@RequestParam(name = "max_price", required = false) BigDecimal maxPrice) {
-		return ResponseEntity.ok(service.searchProduct(nameDescription, minPrice,maxPrice));
+		return ResponseEntity.ok(service.searchProduct(nameDescription, minPrice, maxPrice));
 	}
 
 	@GetMapping(value = "")
@@ -48,39 +57,53 @@ public class ProductsResources {
 	public ResponseEntity<List<Product>> deleteProduct(@PathVariable(required = true) String id) {
 		return ResponseEntity.status(service.deleteProduct(id)).body(null);
 	}
-	
+
 	@PostMapping()
-	public ResponseEntity<?> insertProduct(@RequestBody ProductDTO prodDto) {
+	public ResponseEntity<?> insertProduct(@Valid @RequestBody ProductDTO prodDto) {
 		try {
 			var prod = prodDto.toProduct();
-			if (prod.getPrice().compareTo(BigDecimal.ZERO) < 0) {
-				return ResponseEntity.status(400)
-						.body(new ResponseError(400, "O Valor do produto deve ser maior que zero!"));
-			}
-			var prodCreated = service.insertOrUpdateProduct(prod);
-			var location = URI.create(String.format("/products/%s", prodCreated.getId()));
-			return ResponseEntity.created(location).build();
+			var prodCreated = service.insertProduct(prod);
+			/*
+			 * var location = URI.create(String.format("/products/%s", /
+			 * prodCreated.getId())); return ResponseEntity.created(location).build();
+			 */
+			return ResponseEntity.status(HttpStatus.CREATED).body(prodCreated);
+
 		} catch (Exception e) {
-			return ResponseEntity.status(400).body(new ResponseError(400, e.toString()));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ResponseError(HttpStatus.BAD_REQUEST, e.toString()));
+		}
+	}
+
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<?> updateProduct(@PathVariable(required = true) String id, @RequestBody ProductDTO prodDto) {
+		try {
+			var prod = prodDto.toProduct();
+			var prodUpdate = service.updateProduct(id, prod);
+			if (prodUpdate == 200) {
+				prod.setId(id);
+				return ResponseEntity.ok(prod);
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(new ResponseError(HttpStatus.BAD_REQUEST, "Produto não encontrado."));
+			}
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ResponseError(HttpStatus.BAD_REQUEST, e.toString()));
 		}
 
 	}
 
-	@PutMapping()
-	public ResponseEntity<?> updateProduct(@RequestBody ProductDTO prodDto) {
-		try {
-			var prod = prodDto.toProduct();
-			if (prod.getPrice().compareTo(BigDecimal.ZERO) < 0) {
-				return ResponseEntity.status(400)
-						.body(new ResponseError(400, "O Valor do produto deve ser maior que zero!"));
-			}
-			var prodCreated = service.insertOrUpdateProduct(prod);
-			var location = URI.create(String.format("/products/%s", prodCreated.getId()));
-			return ResponseEntity.created(location).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(400).body(new ResponseError(400, e.toString()));
-		}
-
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseError handleValidationExceptions(MethodArgumentNotValidException ex) {
+		Map<String, String> errors = new HashMap<>();
+		ex.getBindingResult().getAllErrors().forEach((error) -> {
+			String fieldName = ((FieldError) error).getField();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(fieldName, errorMessage);
+		});
+		return new ResponseError(HttpStatus.BAD_REQUEST, errors.toString());
 	}
-
 }
