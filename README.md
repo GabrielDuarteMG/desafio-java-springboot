@@ -56,12 +56,12 @@ Devem ser disponibilizados os seguintes endpoints para operação do catálogo d
 
 | Verbo HTTP  |  Resource path    |           DescriÃ§Ã£o           |
 |-------------|:-----------------:|------------------------------:|
-| POST        |  /products        |   CriaÃ§Ã£o de um produto       |
-| PUT         |  /products/{id}   |   AtualizaÃ§Ã£o de um produto   |
+| POST        |  /products        |   Criação de um produto       |
+| PUT         |  /products/{id}   |   Atualização de um produto   |
 | GET         |  /products/{id}   |   Busca de um produto por ID  |
 | GET         |  /products        |   Lista de produtos           |
 | GET         |  /products/search |   Lista de produtos filtrados |
-| DELETE      |  /products/{id}   |   DeleÃ§Ã£o de um produto       |
+| DELETE      |  /products/{id}   |   Deleção de um produto       |
 
 #### POST /products
 
