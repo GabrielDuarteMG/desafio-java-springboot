@@ -48,22 +48,21 @@ public class ProductService {
 		return repo.findAll();
 	}
 
-	public int deleteProduct(String id) {
+	public Boolean deleteProduct(String id) {
 		if (repo.existsById(id)) {
 			repo.deleteById(id);
-			return 200;
+			return true;
 		} else {
-			return 404;
+			return false;
 		}
 	}
 	
-	public int updateProduct(String id,Product prod) {
+	public Product updateProduct(String id,Product prod) {
 		if (repo.existsById(id)) {
 			prod.setId(id);
-			repo.save(prod);
-			return 200;
+			return repo.save(prod);
 		} else {
-			return 404;
+			return null;
 		}
 	}
 

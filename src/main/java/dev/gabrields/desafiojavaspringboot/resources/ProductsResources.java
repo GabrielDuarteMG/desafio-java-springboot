@@ -55,7 +55,12 @@ public class ProductsResources {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<List<Product>> deleteProduct(@PathVariable(required = true) String id) {
-		return ResponseEntity.status(service.deleteProduct(id)).body(null);
+		var product = service.deleteProduct(id);
+		if (product) {
+			return ResponseEntity.ok(null);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
 	}
 
 	@PostMapping()
@@ -63,10 +68,6 @@ public class ProductsResources {
 		try {
 			var prod = prodDto.toProduct();
 			var prodCreated = service.insertProduct(prod);
-			/*
-			 * var location = URI.create(String.format("/products/%s", /
-			 * prodCreated.getId())); return ResponseEntity.created(location).build();
-			 */
 			return ResponseEntity.status(HttpStatus.CREATED).body(prodCreated);
 
 		} catch (Exception e) {
@@ -80,9 +81,8 @@ public class ProductsResources {
 		try {
 			var prod = prodDto.toProduct();
 			var prodUpdate = service.updateProduct(id, prod);
-			if (prodUpdate == 200) {
-				prod.setId(id);
-				return ResponseEntity.ok(prod);
+			if (prodUpdate != null) {
+				return ResponseEntity.ok(prodUpdate);
 			} else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ResponseError(HttpStatus.BAD_REQUEST, "Produto não encontrado."));
