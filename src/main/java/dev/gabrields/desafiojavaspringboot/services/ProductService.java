@@ -28,15 +28,15 @@ public class ProductService {
 			products = repo.findTitleByNameDescription(nameDescription);
 		else
 			products = repo.findAll();
-
-		for (Product product : products) {
+		
+		products.forEach(product -> {
 			if (minPrice != null && product.getPrice().compareTo(minPrice) > 0) {
 				filterResult.add(product);
 			}
-			if (maxPrice != null && product.getPrice().compareTo(maxPrice) < 0) {
+			if (maxPrice != null && product.getPrice().compareTo(maxPrice) == 1) {
 				filterResult.add(product);
 			}
-		}
+		});
 
 		if (!filterResult.isEmpty())
 			return filterResult;
@@ -56,19 +56,19 @@ public class ProductService {
 			return false;
 		}
 	}
-	
-	public Product updateProduct(String id,Product prod) {
+
+	public Product updateProduct(String id, Product prod) {
 		if (repo.existsById(id)) {
 			prod.setId(id);
-			return repo.save(prod);
+			repo.save(prod);
+			return prod;
 		} else {
 			return null;
 		}
 	}
 
 	public Product insertProduct(Product prod) {
-		repo.save(prod);
-		return prod;
+		return repo.save(prod);
 	}
 
 }

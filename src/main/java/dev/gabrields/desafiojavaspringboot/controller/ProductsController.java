@@ -1,4 +1,4 @@
-package dev.gabrields.desafiojavaspringboot.resources;
+package dev.gabrields.desafiojavaspringboot.controller;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import dev.gabrields.desafiojavaspringboot.services.ProductService;
 
 @RestController
 @RequestMapping(value = "/products")
-public class ProductsResources {
+public class ProductsController {
 	@Autowired
 	private ProductService service;
 
@@ -54,12 +54,13 @@ public class ProductsResources {
 	}
 
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<List<Product>> deleteProduct(@PathVariable(required = true) String id) {
+	public ResponseEntity<?> deleteProduct(@PathVariable(required = true) String id) {
 		var product = service.deleteProduct(id);
 		if (product) {
-			return ResponseEntity.ok(null);
+			return ResponseEntity.ok(Boolean.TRUE);
 		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ResponseError(HttpStatus.BAD_REQUEST, "Produto não encontrado."));
 		}
 	}
 
@@ -79,8 +80,7 @@ public class ProductsResources {
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<?> updateProduct(@PathVariable(required = true) String id, @RequestBody ProductDTO prodDto) {
 		try {
-			var prod = prodDto.toProduct();
-			var prodUpdate = service.updateProduct(id, prod);
+			var prodUpdate = service.updateProduct(id, prodDto.toProduct());
 			if (prodUpdate != null) {
 				return ResponseEntity.ok(prodUpdate);
 			} else {

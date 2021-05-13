@@ -18,6 +18,8 @@ mvn clean install -DskipTests spring-boot:run
 ```
 O projeto estará rodando no caminho http://localhost:9999/
 
+
+
 #### Banco de dados
 Para este projeto foi utilizado o banco H2 para realizar a persistência de dados.
 
